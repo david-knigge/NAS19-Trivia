@@ -21,6 +21,8 @@ public class MenuActivity extends AppCompatActivity implements TriviaRequest.Que
         setContentView(R.layout.activity_main);
     }
 
+    /** If start is clicked, check to see if category and difficulty are set, start request
+     * to obtain questions. */
     public void onClickStart(View v) {
         TriviaRequest req = new TriviaRequest(this);
         String specs = "amount=10";
@@ -33,11 +35,13 @@ public class MenuActivity extends AppCompatActivity implements TriviaRequest.Que
         req.getQuestions(this, specs);
     }
 
+    /** If highscores is clicked, start the highscore activity. */
     public void onClickHighscores(View v) {
         Intent intent = new Intent(this, HighscoreActivity.class);
         startActivity(intent);
     }
 
+    /** When questions are obtained, create a trivia game, pass it to the trivia activity. */
     @Override
     public void gotQuestions(ArrayList<Question> questions) {
         TriviaGame game = new TriviaGame(difficulty, category, questions);
@@ -52,6 +56,8 @@ public class MenuActivity extends AppCompatActivity implements TriviaRequest.Que
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
+    /** When a difficulty selection button is pressed, adjust the difficulty, change the
+     * background of the buttons. */
     public void onClickDifficulty(View v) {
         ViewGroup vg = (ViewGroup) v.getParent();
         for (int i = 0; i < vg.getChildCount(); i++) {

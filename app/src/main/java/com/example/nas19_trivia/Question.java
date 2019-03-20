@@ -2,7 +2,9 @@ package com.example.nas19_trivia;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 
+/** Stores the question, it's difficulty, and all its answers. */
 public class Question implements Serializable {
 
     String question;
@@ -17,6 +19,7 @@ public class Question implements Serializable {
         this.incorrectAnswers = incorrectAnswers;
     }
 
+    /** Get a string containing the question. */
     public String getQuestion() {
         return question;
     }
@@ -25,6 +28,7 @@ public class Question implements Serializable {
         return difficulty;
     }
 
+    /** Obtains the correct answer for this question. */
     public String getCorrectAnswer() {
         return correctAnswer;
     }
@@ -33,9 +37,11 @@ public class Question implements Serializable {
         return incorrectAnswers;
     }
 
+    /** Returns an arraylist of all answers to a question, shuffle list before returning. */
     public ArrayList<String> getAllAnswers() {
         ArrayList<String> ans = (ArrayList<String>)incorrectAnswers.clone();
         ans.add(correctAnswer);
+        Collections.shuffle(ans);
         return ans;
     }
 }

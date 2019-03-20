@@ -17,10 +17,12 @@ import java.util.List;
 
 public class HighscoreActivity extends AppCompatActivity implements TriviaRequest.ScoreCallback {
 
+    /** Arrayadapter for listing all highscores retrieved from server. */
     public class HighscoreAdapter extends ArrayAdapter<Highscore> {
 
         ArrayList<Highscore> scores;
 
+        /** Set name and score in ListView entry. */
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
@@ -37,6 +39,7 @@ public class HighscoreActivity extends AppCompatActivity implements TriviaReques
         }
     }
 
+    /** On creation, obtain highscores by making a get request to flask server. */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +48,7 @@ public class HighscoreActivity extends AppCompatActivity implements TriviaReques
         req.getScores(this);
     }
 
+    /** If scores are succesfully retrieved, set the adapter to display them in ListView. */
     @Override
     public void gotScores(ArrayList<Highscore> scores) {
         ((ListView) findViewById(R.id.highscoreList)).setAdapter(new HighscoreAdapter(

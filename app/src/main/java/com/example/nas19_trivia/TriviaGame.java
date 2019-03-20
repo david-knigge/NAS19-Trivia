@@ -5,6 +5,8 @@ import android.widget.Toast;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/** Class containing all information on a given game. The list of questions, current question,
+ * score, and implements way to answer the current question. */
 public class TriviaGame implements Serializable {
 
     String category, difficulty;
@@ -45,6 +47,7 @@ public class TriviaGame implements Serializable {
         this.questions = questions;
     }
 
+    /** Obtain the next question if there is any questions left. */
     public Question getNextQuestion() {
         if (current < questions.size()) {
             return questions.get(current);
@@ -53,10 +56,12 @@ public class TriviaGame implements Serializable {
         }
     }
 
+    /** Increment the index of the question currently being answered. */
     public void incrementQuestion() {
         current += 1;
     }
 
+    /** Check if a given answer is correct, if so add a point. */
     public boolean answerQuestion(String answer) {
         if (answer.equals(questions.get(current).getCorrectAnswer())) {
             score += 1;
@@ -66,6 +71,7 @@ public class TriviaGame implements Serializable {
         }
     }
 
+    /** Get the number of questions remaining. */
     public int getQuestionsRemaining() {
         return questions.size() - current;
     }

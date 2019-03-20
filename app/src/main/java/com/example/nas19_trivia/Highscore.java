@@ -2,6 +2,7 @@ package com.example.nas19_trivia;
 
 import java.io.Serializable;
 
+/** Class to collect name and highscore. */
 public class Highscore implements Serializable {
 
     String name, score;

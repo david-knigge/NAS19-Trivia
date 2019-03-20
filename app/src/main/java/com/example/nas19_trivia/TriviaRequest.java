@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/** Class containing all requests for this application along with their callback interfaces. */
 public class TriviaRequest {
 
     private final String scoresUrl = "https://ide50-davidknigge.legacy.cs50.io/list";
@@ -33,20 +34,45 @@ public class TriviaRequest {
 
     public TriviaRequest(Context context) {this.context = context;}
 
+    /** Interface for request to obtain questions. */
+    public interface QuestionsCallback {
+        void gotQuestions(ArrayList<Question> questions);
+        void gotQuestionsError(String message);
+    }
+
+    /** Interface for request to post highscore. */
+    public interface PostScoreCallback {
+        void postedScore();
+        void postedScoreError(String message);
+    }
+
+    /** Interface for request to obtain a list of all highscores. */
+    public interface ScoreCallback {
+        void gotScores(ArrayList<Highscore> scores);
+        void gotScoresError(String message);
+    }
+
+    /** Responselistener for request to obtain trivia questions. */
     public class onQuestionsResponseListener implements Response.Listener<JSONObject>, Response.ErrorListener{
+
         @Override
         public void onErrorResponse(VolleyError error) {
             questionsCallback.gotQuestionsError(error.getMessage());
         }
+
+        /** If a successful response is returned parse the questions and pass them back through
+         * callback.*/
         @Override
         public void onResponse(JSONObject response) {
             try {
                 ArrayList<Question> questions = new ArrayList<>();
                 JSONArray results = response.getJSONArray("results");
 
+                // Run through list of questions
                 for (int i = 0; i < results.length(); i++) {
                     JSONObject q = results.getJSONObject(i);
 
+                    // Create an arraylist containing the incorrect answers.
                     ArrayList<String> incorrectAnswers = new ArrayList<>();
                     JSONArray incorrectAnswersArr = q.getJSONArray("incorrect_answers");
                     for (int j = 0; j < incorrectAnswersArr.length(); j++) {
@@ -55,6 +81,8 @@ public class TriviaRequest {
                                 Html.FROM_HTML_MODE_LEGACY
                         ).toString());
                     }
+
+                    // Create the question object
                     questions.add(new Question(
                             Html.fromHtml(q.getString("question"), Html.FROM_HTML_MODE_LEGACY).toString(),
                             Html.fromHtml(q.getString("difficulty"), Html.FROM_HTML_MODE_LEGACY).toString(),
@@ -69,11 +97,16 @@ public class TriviaRequest {
         }
     }
 
+    /** Response listener for request to obtain all highscores. */
     public class onScoresResponseListener implements Response.Listener<JSONArray>, Response.ErrorListener{
+
         @Override
         public void onErrorResponse(VolleyError error) {
             scoreCallback.gotScoresError(error.getMessage());
         }
+
+        /** If a successful response is returned, add all highscores to an arraylist and return
+         * it through the callback. */
         @Override
         public void onResponse(JSONArray response) {
             try {
@@ -92,33 +125,23 @@ public class TriviaRequest {
         }
     }
 
+    /** Responselistener for request to post highscore. */
     public class onPostScoresResponseListener implements Response.Listener<JSONObject>, Response.ErrorListener{
+
         @Override
         public void onErrorResponse(VolleyError error) {
             postScoreCallback.postedScoreError(error.getMessage());
 
         }
+
         @Override
         public void onResponse(JSONObject response) {
             postScoreCallback.postedScore();
         }
     }
 
-    public interface QuestionsCallback {
-        void gotQuestions(ArrayList<Question> questions);
-        void gotQuestionsError(String message);
-    }
-
-    public interface PostScoreCallback {
-        void postedScore();
-        void postedScoreError(String message);
-    }
-
-    public interface ScoreCallback {
-        void gotScores(ArrayList<Highscore> scores);
-        void gotScoresError(String message);
-    }
-
+    /** Create a request to obtain questions from opentdb.
+     * specs -- URL formatted string containing GET parameters. */
     public void getQuestions(QuestionsCallback callback, String specs) {
         this.questionsCallback = callback;
         RequestQueue queue = Volley.newRequestQueue(context);
@@ -132,6 +155,7 @@ public class TriviaRequest {
         queue.add(jsonObjReq);
     }
 
+    /** Create a GET request to obtain all highscores. */
     public void getScores(ScoreCallback callback) {
         this.scoreCallback = callback;
         RequestQueue queue = Volley.newRequestQueue(context);
@@ -145,6 +169,8 @@ public class TriviaRequest {
         queue.add(jsonArrReq);
     }
 
+    /** Create a POST request to save a high score. Had to add a line of code to the flask
+     * server to have it accept JSON data. */
     public void postScore(PostScoreCallback callback, String score, String name) {
         this.postScoreCallback = callback;
         RequestQueue queue = Volley.newRequestQueue(context);
